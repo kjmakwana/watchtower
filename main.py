@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.news import router as news_router
 from routes.markets import router as markets_router
+from routes.graph import router as graph_router
 from database import init_db
 import models  
 from scheduler import start_scheduler, stop_scheduler
@@ -41,3 +42,4 @@ app.add_middleware(
 
 app.include_router(news_router)
 app.include_router(markets_router)
+app.include_router(graph_router)

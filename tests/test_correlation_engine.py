@@ -68,26 +68,47 @@ class TestClassifyMilitary:
 
 
 class TestClassifyTickers:
+    def _tickers(self, result):
+        return [e["ticker"] for e in result]
+
     def test_known_keyword_returns_tickers(self):
         result = classify_tickers("Iran sanctions discussed", "")
-        assert "BRENT" in result
-        assert "WTI" in result
+        tickers = self._tickers(result)
+        assert "BRENT" in tickers
+        assert "WTI" in tickers
 
     def test_unknown_text_returns_empty(self):
         assert classify_tickers("Local council meeting", "Road repair budget approved.") == []
 
     def test_deduplication(self):
-        # "iran" and "iraq" both map to BRENT — should appear only once
+        # "iran" and "iraq" both map to BRENT — should appear as one entry with summed weight
         result = classify_tickers("Iran and Iraq oil deal", "")
-        assert result.count("BRENT") == 1
+        tickers = self._tickers(result)
+        assert tickers.count("BRENT") == 1
+
+    def test_weight_accumulates(self):
+        # "iran" and "iraq" both map to BRENT — weight should be > single keyword hit
+        single = classify_tickers("Iran oil deal", "")
+        double = classify_tickers("Iran and Iraq oil deal", "")
+        single_w = next(e["weight"] for e in single if e["ticker"] == "BRENT")
+        double_w = next(e["weight"] for e in double if e["ticker"] == "BRENT")
+        assert double_w > single_w
+
+    def test_sorted_descending_by_weight(self):
+        result = classify_tickers("Iran sanctions opec deal", "Saudi Arabia crude cut.")
+        weights = [e["weight"] for e in result]
+        assert weights == sorted(weights, reverse=True)
 
     def test_multiple_keywords_aggregate(self):
         result = classify_tickers("Ukraine wheat crisis", "Russia natural gas supplies cut.")
-        assert "WHEAT" in result
-        assert "NATGAS" in result
+        tickers = self._tickers(result)
+        assert "WHEAT" in tickers
+        assert "NATGAS" in tickers
 
-    def test_returns_list(self):
-        assert isinstance(classify_tickers("China trade", ""), list)
+    def test_returns_list_of_dicts(self):
+        result = classify_tickers("China trade", "")
+        assert isinstance(result, list)
+        assert all({"ticker", "weight"} <= e.keys() for e in result)
 
 
 class TestEnrichArticle:
@@ -115,7 +136,8 @@ class TestEnrichArticle:
         article = self._base(title="Saudi Arabia cuts oil production", region="middle_east")
         result = enrich_article(article)
         assert result["tickers"] is not None
-        assert "BRENT" in result["tickers"]
+        tickers = [e["ticker"] for e in result["tickers"]]
+        assert "BRENT" in tickers
 
     def test_no_match_tickers_is_none(self):
         article = self._base(title="Local sports results", summary="Home team wins again.")

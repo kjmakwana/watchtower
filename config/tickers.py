@@ -63,6 +63,13 @@ ALL_TICKERS = {
 # e.g. "BZ=F" → "BRENT"
 SYMBOL_TO_LABEL = {v: k for k, v in ALL_TICKERS.items()}
 
+# Label → asset category — used by graph engine for edge coloring
+TICKER_CATEGORY = {
+    **{k: "equity"    for k in EQUITY_TICKERS},
+    **{k: "commodity" for k in COMMODITY_TICKERS},
+    **{k: "forex"     for k in FOREX_TICKERS},
+}
+
 # ---------------------------------------------------------------------------
 # KEYWORD → TICKER MAPPING
 # Used by correlation_engine.py to tag articles on ingest.

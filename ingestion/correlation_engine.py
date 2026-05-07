@@ -35,17 +35,16 @@ def classify_military(title: str, summary: str, fallback: bool) -> bool:
     return any(re.search(r"\b" + re.escape(kw) + r"\b", corpus) for kw in MILITARY_KEYWORDS)
 
 
-def classify_tickers(title: str, summary: str) -> list[str]:
+def classify_tickers(title: str, summary: str) -> list[dict]:
     corpus = _build_corpus(title, summary)
-    seen: set[str] = set()
-    result: list[str] = []
+    scores: dict[str, int] = {}
     for keyword, tickers in KEYWORD_TICKER_MAP.items():
-        if keyword in corpus:
+        count = len(re.findall(r"\b" + re.escape(keyword) + r"\b", corpus))
+        if count:
             for t in tickers:
-                if t not in seen:
-                    seen.add(t)
-                    result.append(t)
-    return result
+                scores[t] = scores.get(t, 0) + count
+    return [{"ticker": t, "weight": w}
+            for t, w in sorted(scores.items(), key=lambda x: -x[1])]
 
 
 def enrich_article(article: dict) -> dict:
