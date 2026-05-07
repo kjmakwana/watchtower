@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:          #0e1311;
+  --panel:       #141a17;
+  --panel-2:     #1a211d;
+  --ink:         #d8e4d8;
+  --ink-dim:     #8a9a8c;
+  --ink-faint:   #56625a;
+  --line:        #2c3530;
+  --line-strong: #44504a;
+  --amber:       #c9a24a;
+  --amber-dim:   #7a6428;
+  --green:       #6f9b6e;
+  --green-dim:   #3a5239;
+  --red:         #b56353;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: #0e1311;
+  color: #d8e4d8;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
