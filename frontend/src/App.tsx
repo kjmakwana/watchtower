@@ -1,5 +1,7 @@
 import { BreakingTicker } from '@/components/chrome/BreakingTicker'
 import { TopBar } from '@/components/chrome/TopBar'
+import { NewsPanel } from '@/components/news/NewsPanel'
+import { MarketsPanel } from '@/components/markets/MarketsPanel'
 
 function SectionHeader({ title, right }: { title: string; right?: string }) {
   return (
@@ -66,11 +68,11 @@ export default function App() {
 
         {/* Right rail — news top, markets bottom */}
         <div className="flex flex-col gap-2.5 min-h-0">
-          <Panel title="stories" right="0 sources" className="flex-1">
-            <Placeholder label="news feed" />
+          <Panel title="stories" className="flex-1">
+            <NewsPanel />
           </Panel>
-          <Panel title="market pulse" right="30 instruments · 2m" className="flex-1">
-            <Placeholder label="market prices" />
+          <Panel title="market pulse" right="2m" className="flex-1">
+            <MarketsPanel />
           </Panel>
         </div>
       </main>

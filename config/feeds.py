@@ -32,13 +32,6 @@ RSS_FEEDS = [
         "source_id": "dawn",
     },
     {
-        "name": "EUCOM",
-        "url": "https://www.eucom.mil/syndication-feed/rss/press-releases",
-        "region": "europe",
-        "source_id": "eucom",
-        "is_military": True,
-    },
-    {
         "name": "Dept. of War",
         "url": "https://war.gov/DesktopModules/ArticleCS/RSS.ashx?max=25&ContentType=1&Site=945",
         "region": "global",
