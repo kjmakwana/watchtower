@@ -2,6 +2,7 @@ import { BreakingTicker } from '@/components/chrome/BreakingTicker'
 import { TopBar } from '@/components/chrome/TopBar'
 import { NewsPanel } from '@/components/news/NewsPanel'
 import { MarketsPanel } from '@/components/markets/MarketsPanel'
+import { useFilters } from '@/lib/useFilters'
 
 function SectionHeader({ title, right }: { title: string; right?: string }) {
   return (
@@ -50,10 +51,12 @@ function Placeholder({ label }: { label: string }) {
 }
 
 export default function App() {
+  const { newsFilters, marketFilters, setRegion, setMilitary, setMarketType } = useFilters()
+
   return (
     <div className="h-screen flex flex-col bg-bg overflow-hidden">
       <BreakingTicker />
-      <TopBar />
+      <TopBar filters={newsFilters} setRegion={setRegion} setMilitary={setMilitary} />
 
       <main className="flex-1 grid grid-cols-[1fr_380px] gap-2.5 p-2.5 min-h-0">
         {/* Left column — map top, graph bottom */}
@@ -69,10 +72,10 @@ export default function App() {
         {/* Right rail — news top, markets bottom */}
         <div className="flex flex-col gap-2.5 min-h-0">
           <Panel title="stories" className="flex-1">
-            <NewsPanel />
+            <NewsPanel filters={newsFilters} />
           </Panel>
           <Panel title="market pulse" right="2m" className="flex-1">
-            <MarketsPanel />
+            <MarketsPanel type={marketFilters.type} setType={setMarketType} />
           </Panel>
         </div>
       </main>

@@ -1,13 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchNews } from '@/lib/api'
 import { ArticleCard } from './ArticleCard'
+import type { NewsFilters } from '@/lib/useFilters'
 
-export function NewsPanel() {
+export function NewsPanel({ filters }: { filters: NewsFilters }) {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['news'],
-    queryFn: () => fetchNews({ limit: 50 }),
+    queryKey: ['news', filters],
+    queryFn: () => fetchNews({ region: filters.region, military: filters.military, limit: 50 }),
     staleTime: 60_000,
   })
+
+  const activeLabels = [
+    filters.region,
+    filters.military ? 'MIL' : null,
+  ].filter(Boolean).join(' · ')
 
   if (isLoading) {
     return (
@@ -30,8 +36,15 @@ export function NewsPanel() {
   }
 
   return (
-    <div className="h-full overflow-y-auto">
-      {data?.articles.map((a) => <ArticleCard key={a.id} article={a} />)}
+    <div className="h-full flex flex-col min-h-0">
+      {activeLabels && (
+        <div className="px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-ink-faint border-b border-line">
+          {activeLabels}
+        </div>
+      )}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {data?.articles.map((a) => <ArticleCard key={a.id} article={a} />)}
+      </div>
     </div>
   )
 }
