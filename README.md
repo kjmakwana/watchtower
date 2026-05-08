@@ -1,101 +1,128 @@
 # Watchtower
 
-## Status
+A geopolitical OSINT dashboard for analysts. Ingests news from RSS feeds, classifies articles by region and military relevance using a keyword engine, tracks live market prices, and surfaces everything through a React dashboard.
 
-Currently in development (dev/in-progress). Some endpoints/schemas may change as the project evolves.
+> Status: In active development. Endpoints and schemas may change.
 
-FastAPI web app that:
-1. Ingests geopolitical news from configured RSS feeds into a local SQL database.
-2. Periodically fetches market prices for a set of tickers and serves the latest cached prices via an API.
+---
 
 ## Features
 
-- Background scheduler (APScheduler) running at app startup
-- REST endpoints:
-  - `/api/news` (RSS articles from the DB)
-  - `/api/markets` (latest cached market prices from the DB)
-- SQLite by default (configurable via `DATABASE_URL`)
+### Backend
+- **RSS ingestion** — pulls from configured feeds every 15 minutes, deduplicates by URL
+- **Content classification engine** — gazetteer-based keyword scoring assigns each article a region, military flag, and weighted ticker list (no ML/NER dependency)
+- **Market price tracking** — fetches 30+ instruments (commodities, forex, equities) every 2 minutes via yfinance with Alpha Vantage fallback
+- **Region-to-region impact graph** — edge-weighted graph where nodes are regions and edges represent shared ticker exposure, with a 2× multiplier for military articles
+- **SQLite with WAL mode** — concurrent reads alongside background writes without lock contention
+
+### Frontend
+- **News panel** — live article feed with source, region, MIL tag, time-ago, and ticker chips; refreshes on mount
+- **Market pulse panel** — prices grouped by asset type (commodity / forex / equity) with green/red change%, auto-refreshes every 2 minutes
+- **Breaking ticker** — top-of-screen news bar
+- World map and correlation graph panels — placeholders, in progress
+
+### API
+| Endpoint | Description |
+|---|---|
+| `GET /api/news` | Articles with filters: `region`, `source`, `military`, `limit`, `offset` |
+| `GET /api/markets` | Cached prices with filter: `type` (commodity/forex/equity) |
+| `GET /api/graph` | Region impact graph with param: `hours` (default 168) |
+
+---
 
 ## Tech Stack
 
-- Python + FastAPI
-- SQLAlchemy (SQLite)
-- RSS ingestion: `feedparser`
-- Market ingestion:
-  - Primary: `yfinance`
-  - Fallback: Alpha Vantage (optional, via `ALPHA_VANTAGE_API_KEY`)
+| Layer | Technology |
+|---|---|
+| Backend | Python, FastAPI, SQLAlchemy, SQLite |
+| Scheduling | APScheduler |
+| RSS parsing | feedparser |
+| Market data | yfinance, Alpha Vantage (fallback) |
+| Frontend | React 18, TypeScript, Vite |
+| Styling | Tailwind CSS |
+| Data fetching | TanStack Query v5 |
+| Testing | pytest |
+
+---
 
 ## Setup
 
-1. Install dependencies
-   ```powershell
-   py -m pip install -r requirements.txt
-   ```
+### Backend
 
-2. Create a `.env` file (optional, only needed for non-default config)
-   ```bash
-   # Optional: change DB location / type
-   DATABASE_URL=sqlite:///./geopol.db
-
-   # Optional: only used if yfinance fails for a ticker
-   ALPHA_VANTAGE_API_KEY=your_key_here
-   ```
-
-## Run the server
-
-```powershell
-py -m uvicorn main:app --reload --port 8000
+```bash
+pip install -r requirements.txt
 ```
 
-On startup, the scheduler initializes the DB and immediately performs:
-
-- RSS ingest (then every 15 minutes)
-- Market price fetch (then every 2 minutes)
-
-Browser note: CORS is configured to allow requests from `http://localhost:5173` (React dev server).
-
-## API
-
-### `GET /api/news`
-Query params:
-- `region`: optional string (e.g. `europe`, `middle_east`)
-- `source`: optional string (e.g. `bbc`, `eucom`)
-- `military`: optional boolean
-- `limit`: default `20` (min 1, max 100)
-- `offset`: default `0` (min 0)
-
-Response:
-- `total`: total matching rows
-- `offset`, `limit`
-- `articles`: list of article objects (id, title, url, source, source_name, region, is_military, summary, published_at)
-
-### `GET /api/markets`
-Query params:
-- `type`: optional string (`commodity`, `forex`, or `equity`)
-
-Response:
-- `count`: number of returned rows
-- `type_filter`: echoed back `type`
-- `prices`: list of cached price objects (label, symbol, asset_type, price, prev_close, change_pct, currency, source, fetched_at)
-
-Configuration:
-- RSS feeds are in `config/feeds.py` (`RSS_FEEDS`)
-- Market tickers are in `config/tickers.py` (`ALL_TICKERS` and keyword/ticker mappings)
-
-## Development / Testing
-
-```powershell
-py -m pytest -v
+Create a `.env` file (all optional):
+```bash
+DATABASE_URL=sqlite:///./geopol.db
+ALPHA_VANTAGE_API_KEY=your_key_here   # only if yfinance fails for a ticker
 ```
 
-## Project Layout (high level)
+Run:
+```bash
+uvicorn main:app --reload --port 8000
+```
 
-- `main.py`: FastAPI app + lifespan (starts/stops scheduler)
-- `scheduler.py`: scheduled jobs for RSS ingest and market fetching
-- `database.py` / `models.py`: SQLAlchemy engine/session + tables
-- `routes/news.py`: `/api/news`
-- `routes/markets.py`: `/api/markets`
-- `ingestion/rss_fetcher.py`: RSS parsing + normalization
-- `ingestion/ingestor.py`: writes new articles to the DB
-- `ingestion/market_fetcher.py`: yfinance + fallback fetch + DB upserts
+On startup the scheduler immediately runs an RSS ingest and market fetch, then repeats on schedule.
 
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev      # http://localhost:5173
+```
+
+Create `frontend/.env.local` to override the API base URL (optional):
+```bash
+VITE_API_URL=http://localhost:8000
+```
+
+---
+
+## Configuration
+
+- **RSS feeds** — `config/feeds.py` (`RSS_FEEDS`)
+- **Market tickers** — `config/tickers.py` (`ALL_TICKERS`, category maps)
+- **Geo-entity keywords** — `config/geo_map.py` (gazetteer + military keywords)
+
+---
+
+## Project Layout
+
+```
+├── main.py                      # FastAPI app + lifespan
+├── scheduler.py                 # APScheduler jobs
+├── database.py / models.py      # SQLAlchemy engine + ORM tables
+├── config/
+│   ├── feeds.py                 # RSS feed list
+│   ├── tickers.py               # tracked instruments
+│   └── geo_map.py               # gazetteer + military keywords
+├── ingestion/
+│   ├── rss_fetcher.py           # feed parsing + normalization
+│   ├── ingestor.py              # DB writes
+│   ├── market_fetcher.py        # yfinance + fallback + DB upserts
+│   ├── correlation_engine.py    # region/military/ticker classification
+│   └── graph_engine.py          # region impact graph computation
+├── routes/
+│   ├── news.py
+│   ├── markets.py
+│   └── graph.py
+├── tests/
+└── frontend/
+    └── src/
+        ├── components/
+        │   ├── chrome/          # TopBar, BreakingTicker
+        │   ├── news/            # NewsPanel, ArticleCard
+        │   └── markets/         # MarketsPanel, MarketRow
+        └── lib/                 # api.ts, types.ts
+```
+
+---
+
+## Testing
+
+```bash
+pytest -v
+```
