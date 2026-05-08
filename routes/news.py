@@ -1,5 +1,7 @@
 # routes/news.py
 
+from datetime import timezone
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -51,7 +53,11 @@ def get_news(
                 "region":       a.region,
                 "is_military":  a.is_military,
                 "summary":      a.summary,
-                "published_at": a.published_at.isoformat(),
+                "published_at": (
+                    a.published_at.replace(tzinfo=timezone.utc)
+                    if a.published_at.tzinfo is None
+                    else a.published_at
+                ).isoformat(),
                 "tickers":      a.tickers,
             }
             for a in articles
