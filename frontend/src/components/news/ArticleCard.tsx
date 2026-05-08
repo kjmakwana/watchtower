@@ -1,16 +1,21 @@
 import type { Article } from '@/lib/types'
 
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
+function formatTime(iso: string): { label: string; title: string } {
+  const d = new Date(iso)
+  const diff = Date.now() - d.getTime()
   const m = Math.floor(diff / 60_000)
-  if (m < 60) return `${m}m`
+  const title = d.toLocaleString()
+  if (m < 60) return { label: `${m}m`, title }
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h`
-  return `${Math.floor(h / 24)}d`
+  if (h < 24) return { label: `${h}h`, title }
+  const days = Math.floor(h / 24)
+  if (days < 365) return { label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }), title }
+  return { label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }), title }
 }
 
 export function ArticleCard({ article }: { article: Article }) {
   const tickers = article.tickers ?? []
+  const time = formatTime(article.published_at)
 
   return (
     <a
@@ -33,8 +38,8 @@ export function ArticleCard({ article }: { article: Article }) {
             <span className="font-mono text-[9px] uppercase tracking-widest text-amber">MIL</span>
           </>
         )}
-        <span className="ml-auto font-mono text-[9px] text-ink-faint">
-          {timeAgo(article.published_at)}
+        <span className="ml-auto font-mono text-[9px] text-ink-faint" title={time.title}>
+          {time.label}
         </span>
       </div>
 
