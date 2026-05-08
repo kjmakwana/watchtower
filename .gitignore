@@ -50,6 +50,9 @@ frontend/tsconfig.tsbuildinfo
 *.sqlite3
 *.log
 
+# Deprecated files/folders (marked for manual removal)
+*.deprecated
+
 # Editor / OS noise
 .claude/
 .vscode/
