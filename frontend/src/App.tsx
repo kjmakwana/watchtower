@@ -2,6 +2,7 @@ import { BreakingTicker } from '@/components/chrome/BreakingTicker'
 import { TopBar } from '@/components/chrome/TopBar'
 import { NewsPanel } from '@/components/news/NewsPanel'
 import { MarketsPanel } from '@/components/markets/MarketsPanel'
+import { WorldMap } from '@/components/map/WorldMap'
 import { useFilters } from '@/lib/useFilters'
 
 function SectionHeader({ title, right }: { title: string; right?: string }) {
@@ -62,7 +63,7 @@ export default function App() {
         {/* Left column — map top, graph bottom */}
         <div className="grid grid-rows-2 gap-2.5 min-h-0">
           <Panel title="world activity" right="pin size = story volume">
-            <Placeholder label="world map" />
+            <WorldMap activeRegion={newsFilters.region} onRegionClick={setRegion} />
           </Panel>
           <Panel title="correlation graph" right="filtered to map selection">
             <Placeholder label="region impact graph" />

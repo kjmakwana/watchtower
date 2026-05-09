@@ -38,4 +38,11 @@ RSS_FEEDS = [
         "source_id": "dow",
         "is_military": True,
     },
+    {
+        "name": "Time of India",
+        "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+        "region": "s_asia",
+        "source_id": "toi",
+        "is_military": False,
+    },
 ]

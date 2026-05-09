@@ -35,3 +35,26 @@ export interface MarketsResponse {
   type_filter: string | null
   prices: MarketPrice[]
 }
+
+export interface GraphNode {
+  id: string
+  article_count: number
+  military_count: number
+  total_weight: number
+}
+
+export interface GraphEdge {
+  source: string
+  target: string
+  weight: number
+  military_weight: number
+  dominant_ticker: string
+  dominant_category: string
+  tickers: { ticker: string; weight: number; category: string }[]
+}
+
+export interface GraphResponse {
+  nodes: GraphNode[]
+  edges: GraphEdge[]
+  meta: { window_hours: number; generated_at: string; article_count: number }
+}
