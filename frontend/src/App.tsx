@@ -60,15 +60,10 @@ export default function App() {
       <TopBar filters={newsFilters} setRegion={setRegion} setMilitary={setMilitary} />
 
       <main className="flex-1 grid grid-cols-[1fr_380px] gap-2.5 p-2.5 min-h-0">
-        {/* Left column — map top, graph bottom */}
-        <div className="grid grid-rows-2 gap-2.5 min-h-0">
-          <Panel title="world activity" right="pin size = story volume">
-            <WorldMap activeRegion={newsFilters.region} onRegionClick={setRegion} />
-          </Panel>
-          <Panel title="correlation graph" right="filtered to map selection">
-            <Placeholder label="region impact graph" />
-          </Panel>
-        </div>
+        {/* Left column — full-height world map */}
+        <Panel title="world activity" right="pin size = story volume">
+          <WorldMap activeRegion={newsFilters.region} onRegionClick={setRegion} />
+        </Panel>
 
         {/* Right rail — news top, markets bottom */}
         <div className="flex flex-col gap-2.5 min-h-0">
