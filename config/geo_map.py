@@ -116,7 +116,7 @@ MILITARY_KEYWORDS = [
     "air force", "marine", "marines", "missile", "missiles", "strike",
     "airstrike", "air strike", "bomb", "bombing", "drone", "drones",
     "warfare", "combat", "warship", "aircraft carrier", "invasion",
-    "offensive", "weapon", "weapons", "arsenal", "artillery", "tank",
+    "offensive", "weapon", "weapons", "artillery", "tank",
     "tanks", "battalion", "special forces", "pentagon", "war", "ceasefire",
     "siege", "blockade", "shelling", "casualty", "casualties", "killed in action",
     "defense minister", "defence minister", "joint chiefs", "general", "admiral",
