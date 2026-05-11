@@ -87,7 +87,7 @@ REGION_GEO_MAP = {
     "latin america": "americas", "washington": "americas", "ottawa": "americas",
     "mexico city": "americas", "brasilia": "americas", "bogota": "americas",
     "caracas": "americas", "buenos aires": "americas", "santiago": "americas",
-    "white house": "americas", "pentagon": "americas", "congress": "americas",
+    "white house": "americas", "pentagon": "americas",
     "us senate": "americas", "federal reserve": "americas", "wall street": "americas",
 
     # --- africa ---

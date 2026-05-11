@@ -50,7 +50,7 @@ def classify_tickers(title: str, summary: str) -> list[dict]:
 def enrich_article(article: dict) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
-    article["region"] = classify_region(title, summary, article["region"])
+    article["region"] = classify_region(title, summary, "global")
     article["is_military"] = classify_military(title, summary, article.get("is_military", False))
     tickers = classify_tickers(title, summary)
     article["tickers"] = tickers if tickers else None
