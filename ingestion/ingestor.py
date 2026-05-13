@@ -4,6 +4,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from database import get_db
+from ingestion.clustering import assign_clusters
 from ingestion.correlation_engine import enrich_article
 from ingestion.rss_fetcher import fetch_all_feeds
 from models import Article
@@ -42,6 +43,7 @@ def ingest_rss(db: Session | None = None) -> int:
     try:
         articles = [enrich_article(a) for a in fetch_all_feeds()]
         new_count = _write_articles(articles, db)
+        assign_clusters(db)
         logger.info("Ingested %d new articles", new_count)
         return new_count
 

@@ -45,3 +45,8 @@ def init_db():
             conn.commit()
         except Exception:
             pass  # column already exists
+        try:
+            conn.execute(text("ALTER TABLE articles ADD COLUMN cluster_id INTEGER"))
+            conn.commit()
+        except Exception:
+            pass  # column already exists

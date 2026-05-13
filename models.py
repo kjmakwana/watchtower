@@ -30,6 +30,7 @@ class Article(Base):
                                      )
     tickers:      Mapped[list]     = mapped_column(JSON,         nullable=True)  # e.g. ["BRENT", "WTI"]
     tags:         Mapped[list]     = mapped_column(JSON,         nullable=True)  # RSS editorial tags e.g. ["ukraine", "nato"]
+    cluster_id:   Mapped[int]      = mapped_column(Integer,      nullable=True)  # min article.id of cluster; NULL = singleton
     sentiment:    Mapped[dict]     = mapped_column(JSON,         nullable=True)  # e.g. {"label": "negative", "score": 0.91}
     impact_score: Mapped[str]      = mapped_column(String(16),   nullable=True)  # "High" | "Medium" | "Low" (Week 6)
     gdelt_tone:   Mapped[float]    = mapped_column(Float,        nullable=True)  # GDELT tone score (Week 6)
