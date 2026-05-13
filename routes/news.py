@@ -59,6 +59,7 @@ def get_news(
                     else a.published_at
                 ).isoformat(),
                 "tickers":      a.tickers,
+                "tags":         a.tags,
             }
             for a in articles
         ],

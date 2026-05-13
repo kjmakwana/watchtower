@@ -1,7 +1,7 @@
 # database.py
 
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./geopol.db")
@@ -39,3 +39,9 @@ def get_db():
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE articles ADD COLUMN tags TEXT"))
+            conn.commit()
+        except Exception:
+            pass  # column already exists

@@ -52,6 +52,13 @@ def _normalize_entry(entry: feedparser.FeedParserDict, feed_cfg: dict) -> dict |
     import re
     summary = re.sub(r"<[^>]+>", "", summary).strip()[:1000]
 
+    raw_tags = entry.get("tags", [])
+    tags = list(dict.fromkeys(
+        t["term"].strip().lower()
+        for t in raw_tags
+        if t.get("term") and t["term"].strip()
+    )) or None
+
     return {
         "title": title,
         "url": url,
@@ -62,6 +69,7 @@ def _normalize_entry(entry: feedparser.FeedParserDict, feed_cfg: dict) -> dict |
         "is_military": feed_cfg.get("is_military", False),
         "summary": summary,
         "published_at": _parse_date(entry),
+        "tags": tags,
     }
 
 
