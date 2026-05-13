@@ -1,4 +1,4 @@
-import { BreakingTicker } from '@/components/chrome/BreakingTicker'
+import { TopStoriesTicker } from '@/components/chrome/TopStoriesTicker'
 import { TopBar } from '@/components/chrome/TopBar'
 import { NewsPanel } from '@/components/news/NewsPanel'
 import { MarketsPanel } from '@/components/markets/MarketsPanel'
@@ -56,7 +56,7 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col bg-bg overflow-hidden">
-      <BreakingTicker />
+      <TopStoriesTicker />
       <TopBar filters={newsFilters} setRegion={setRegion} setMilitary={setMilitary} />
 
       <main className="flex-1 grid grid-cols-[1fr_380px] gap-2.5 p-2.5 min-h-0">

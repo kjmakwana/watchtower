@@ -1,3 +1,4 @@
+// DEPRECATED — replaced by TopStoriesTicker.tsx (live cluster data)
 export function BreakingTicker() {
   const items = [
     'HORMUZ INCIDENT — TANKERS REROUTING',

@@ -58,3 +58,14 @@ export interface GraphResponse {
   edges: GraphEdge[]
   meta: { window_hours: number; generated_at: string; article_count: number }
 }
+
+export interface ClusterStory {
+  cluster_id: number
+  article_count: number
+  title: string
+  region: string
+}
+
+export interface ClustersResponse {
+  clusters: ClusterStory[]
+}

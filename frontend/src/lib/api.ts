@@ -1,4 +1,4 @@
-import type { NewsResponse, MarketsResponse, GraphResponse } from './types'
+import type { NewsResponse, MarketsResponse, GraphResponse, ClustersResponse } from './types'
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -31,5 +31,12 @@ export async function fetchGraph(hours?: number): Promise<GraphResponse> {
   if (hours != null) query.set('hours', String(hours))
   const res = await fetch(`${BASE}/api/graph?${query}`)
   if (!res.ok) throw new Error(`graph fetch failed: ${res.status}`)
+  return res.json()
+}
+
+export async function fetchTopClusters(limit = 5): Promise<ClustersResponse> {
+  const query = new URLSearchParams({ limit: String(limit) })
+  const res = await fetch(`${BASE}/api/clusters/top?${query}`)
+  if (!res.ok) throw new Error(`clusters fetch failed: ${res.status}`)
   return res.json()
 }
