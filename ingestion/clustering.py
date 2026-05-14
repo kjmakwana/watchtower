@@ -13,7 +13,7 @@ from models import Article
 
 logger = logging.getLogger(__name__)
 
-SIMILARITY_THRESHOLD = 0.35
+SIMILARITY_THRESHOLD = 0.45
 WINDOW_HOURS = 24
 
 REGIONS = [
