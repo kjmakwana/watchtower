@@ -45,4 +45,11 @@ RSS_FEEDS = [
         "source_id": "toi",
         "is_military": False,
     },
+    {
+        "name": "New York Times",
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+        "region": "americas",
+        "source_id": "nyt",
+        "is_military": False,
+    },
 ]
