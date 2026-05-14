@@ -4,7 +4,7 @@ import logging
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy.orm import Session
 
@@ -13,7 +13,9 @@ from models import Article
 
 logger = logging.getLogger(__name__)
 
-SIMILARITY_THRESHOLD = 0.45
+_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+
+SIMILARITY_THRESHOLD = 0.80  # embedding cosine; TF-IDF equivalent was 0.45
 WINDOW_HOURS = 24
 
 REGIONS = [
@@ -36,28 +38,22 @@ def _find_clusters(
                     the same story
     Returns: dict mapping article_id → cluster_id for non-singleton articles;
              singletons are absent (caller treats missing ids as NULL)
-    Basic working: vectorises corpora with TF-IDF, computes pairwise cosine
-                   similarity, then groups articles above threshold via
-                   union-find; cluster_id = min article.id in each group
+    Basic working: encodes corpora with a sentence-transformer model, computes
+                   pairwise cosine similarity, then groups articles above
+                   threshold via union-find; cluster_id = min article.id in each group
     """
     if len(ids) < 2:
         return {}
 
-    # Filter out articles whose corpus is empty — zero vectors break cosine similarity
+    # Filter out articles whose corpus is empty
     valid = [(id_, corp) for id_, corp in zip(ids, corpora) if corp.strip()]
     if len(valid) < 2:
         return {}
 
     valid_ids, valid_corpora = zip(*valid)
 
-    vec = TfidfVectorizer(stop_words="english")
-    try:
-        tfidf_matrix = vec.fit_transform(valid_corpora)
-    except ValueError:
-        # Raised when every document is empty after stop-word removal
-        return {}
-
-    sim_matrix = cosine_similarity(tfidf_matrix)
+    embeddings = _MODEL.encode(list(valid_corpora), convert_to_numpy=True, show_progress_bar=False)
+    sim_matrix = cosine_similarity(embeddings)
 
     # Union-find — path compression only (good enough for small n)
     n = len(valid_ids)

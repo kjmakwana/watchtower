@@ -13,7 +13,6 @@ from datetime import datetime, timedelta, timezone
 from statistics import mean, median
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Project root must be on sys.path when running as a script
@@ -21,6 +20,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import SessionLocal
+from ingestion.clustering import _MODEL
 from ingestion.text_utils import build_clean_corpus
 from models import Article
 
@@ -30,18 +30,13 @@ def _avg_intra_sim(corpora: list[str]) -> float:
     Called by: main (this module)
     Parameters: corpora — list of cleaned corpus strings for one cluster
     Returns: average pairwise cosine similarity (upper triangle, no diagonal)
-    Basic working: TF-IDF vectorises corpora, computes cosine similarity matrix,
-                   averages all n*(n-1)/2 pairs from the upper triangle
+    Basic working: encodes corpora with the shared sentence-transformer model,
+                   computes cosine similarity matrix, averages all n*(n-1)/2
+                   pairs from the upper triangle
     """
-    vec = TfidfVectorizer(stop_words="english")
-    try:
-        matrix = vec.fit_transform(corpora)
-    except ValueError:
-        return 0.0
-
-    sim = cosine_similarity(matrix)
+    embeddings = _MODEL.encode(corpora, convert_to_numpy=True, show_progress_bar=False)
+    sim = cosine_similarity(embeddings)
     n = sim.shape[0]
-    # Upper triangle indices (excluding diagonal)
     rows, cols = np.triu_indices(n, k=1)
     pairs = sim[rows, cols]
     return float(pairs.mean()) if len(pairs) > 0 else 0.0

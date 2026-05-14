@@ -3,10 +3,6 @@
 import html
 import re
 
-# Matches correlation_engine.py — title repeated this many times in the corpus
-# so title keywords carry more weight than summary keywords in TF-IDF scoring
-TITLE_WEIGHT = 3
-
 # Wire-service dateline attributions that appear at the start of summaries,
 # e.g. "VIENNA (Reuters) — Diplomats gathered..."
 _DATELINES = [
@@ -69,20 +65,18 @@ def _clean_text(text: str) -> str:
 
 def build_clean_corpus(title: str, summary: str) -> str:
     """
-    Called by: clustering module (ingestion/clustering.py, to be built in step 2)
+    Called by: ingestion/clustering.py (_find_clusters via assign_clusters)
     Parameters:
         title   (str) — raw article title from Article model
         summary (str) — raw article summary from Article model
-    Returns: single weighted string ready for TF-IDF vectorisation
-    Basic working: cleans title and summary independently via _clean_text,
-                   then returns title repeated TITLE_WEIGHT times followed
-                   by summary so title terms carry proportionally more weight
+    Returns: cleaned string for sentence-transformer encoding
+    Basic working: cleans title and summary via _clean_text, concatenates
+                   with a period separator; sentence embeddings handle
+                   semantic weighting, so title repetition is not needed
     """
     clean_title   = _clean_text(title or "")
     clean_summary = _clean_text(summary or "")
 
-    parts = [clean_title] * TITLE_WEIGHT
     if clean_summary:
-        parts.append(clean_summary)
-
-    return " ".join(parts).strip()
+        return (clean_title + ". " + clean_summary).strip()
+    return clean_title
