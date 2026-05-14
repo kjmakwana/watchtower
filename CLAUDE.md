@@ -39,6 +39,10 @@ yfinance / Alpha Vantage → market_fetcher.py → SQLite (market_prices table)
 
 SQLite at `geopol.db` (gitignored). Two tables: `articles` and `market_prices`. `tickers` column on articles is `JSON`, stores weighted list or `null`. No migration tooling — schema changes require dropping and re-creating the DB.
 
+### DECISIONS.md
+
+This file records the decisions we make and the rationale behind them. It is basically the record of the progress of this project.  Each entry records what was decided, what alternatives were considered, and why we moved in the direction we did. Items are ordered chronologically within each section.
+
 ## Behavior Guidelines
 
 - Before starting any task that touches more than one file, summarize 
@@ -55,8 +59,9 @@ SQLite at `geopol.db` (gitignored). Two tables: `articles` and `market_prices`. 
 
 
 ## Hard Rules
-- Always consider updates to .gitignore, README.MD and requirements.txt 
+- Always consider updates to .gitignore, README.md and requirements.txt 
   when you update any code.
+- Always consider changes to DECISIONS.md when adding or editing a feature
 - Don't delete files. Mark them as deprecated with a comment and file name suffix instead, 
   and flag them for manual removal.
 - No data, env files should ever be pushed to git. Always double check
