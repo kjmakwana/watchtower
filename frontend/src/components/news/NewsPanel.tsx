@@ -7,7 +7,8 @@ export function NewsPanel({ filters }: { filters: NewsFilters }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['news', filters],
     queryFn: () => fetchNews({ region: filters.region, military: filters.military, limit: 50 }),
-    staleTime: 60_000,
+    staleTime: 14 * 60_000,
+    refetchInterval: 15 * 60_000,
   })
 
   const activeLabels = [
