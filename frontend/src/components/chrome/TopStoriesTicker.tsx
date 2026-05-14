@@ -6,8 +6,8 @@ export function TopStoriesTicker() {
   const { data } = useQuery({
     queryKey: ['top-clusters'],
     queryFn: () => fetchTopClusters(5),
-    refetchInterval: 5 * 60 * 1000,
-    staleTime: 4 * 60 * 1000,
+    refetchInterval: 15 * 60 * 1000,
+    staleTime: 14 * 60 * 1000,
   })
 
   const clusters = data?.clusters ?? []
