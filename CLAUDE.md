@@ -41,7 +41,7 @@ SQLite at `geopol.db` (gitignored). Two tables: `articles` and `market_prices`. 
 
 ### DECISIONS.md
 
-This file records the decisions we make and the rationale behind them. It is basically the record of the progress of this project.  Each entry records what was decided, what alternatives were considered, and why we moved in the direction we did. Items are ordered chronologically within each section.
+This file records the decisions we make and the rationale behind them. It is basically the record of the progress of this project.  Each entry records what was decided, what alternatives were considered, and why we moved in the direction we did. Items are ordered chronologically within each section. 
 
 ## Behavior Guidelines
 
