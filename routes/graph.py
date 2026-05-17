@@ -24,6 +24,7 @@ def get_graph(
             "region":      a.region,
             "tickers":     a.tickers,
             "is_military": a.is_military,
+            "source":      a.source,
         }
         for a in articles
     ]

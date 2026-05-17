@@ -41,6 +41,10 @@ export interface GraphNode {
   article_count: number
   military_count: number
   total_weight: number
+  intensity: number
+  source_diversity: number
+  sources: string[]
+  tickers_display: string[]
 }
 
 export interface GraphEdge {
@@ -56,7 +60,7 @@ export interface GraphEdge {
 export interface GraphResponse {
   nodes: GraphNode[]
   edges: GraphEdge[]
-  meta: { window_hours: number; generated_at: string; article_count: number }
+  meta: { window_hours: number; generated_at: string; article_count: number; sparse_data: boolean }
 }
 
 export interface ClusterStory {

@@ -28,6 +28,30 @@ A geopolitical OSINT dashboard for analysts. Ingests news from RSS feeds, classi
 | `GET /api/markets` | Cached prices with filter: `type` (commodity/forex/equity) |
 | `GET /api/graph` | Region impact graph with param: `hours` (default 168) |
 
+#### `GET /api/graph` — node schema
+
+Each object in the `nodes` array:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Region identifier (e.g. `middle_east`) |
+| `article_count` | `int` | Total articles in the time window |
+| `military_count` | `int` | Articles classified as military |
+| `total_weight` | `int` | Sum of ticker weights (military articles 2× multiplied) |
+| `intensity` | `float` | Composite heat score, 0.0–10.0 |
+| `source_diversity` | `int` | Count of unique sources for this region |
+| `sources` | `string[]` | Unique source names (sorted, for tooltip) |
+| `tickers_display` | `string[]` | Deduplicated tickers for this region, excluding military articles (sorted, for tooltip) |
+
+The response `meta` object:
+
+| Field | Type | Description |
+|---|---|---|
+| `window_hours` | `int` | Query time window |
+| `generated_at` | `string` | ISO 8601 UTC timestamp |
+| `article_count` | `int` | Total articles in the query |
+| `sparse_data` | `bool` | `true` when total non-global article count is below threshold (scores unreliable) |
+
 ---
 
 ## Tech Stack
