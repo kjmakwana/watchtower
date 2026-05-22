@@ -50,3 +50,8 @@ def init_db():
             conn.commit()
         except Exception:
             pass  # column already exists
+        try:
+            conn.execute(text("ALTER TABLE articles ADD COLUMN regions TEXT"))
+            conn.commit()
+        except Exception:
+            pass  # column already exists

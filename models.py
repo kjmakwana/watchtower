@@ -17,7 +17,8 @@ class Article(Base):
     url:          Mapped[str]      = mapped_column(String(2000), nullable=False, unique=True)
     source:       Mapped[str]      = mapped_column(String(50), nullable=False)
     source_name:  Mapped[str]      = mapped_column(String(100), nullable=False)
-    region:       Mapped[str]      = mapped_column(String(50), nullable=False)
+    region:       Mapped[str]      = mapped_column(String(50), nullable=False)  # DEPRECATED — use regions
+    regions:      Mapped[list]     = mapped_column(JSON,        nullable=True)   # [primary, secondary?]
     is_military:  Mapped[bool]     = mapped_column(Boolean, default=False)
     summary:      Mapped[str]      = mapped_column(Text, default="")
     published_at: Mapped[datetime] = mapped_column(

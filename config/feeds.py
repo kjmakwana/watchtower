@@ -52,4 +52,11 @@ RSS_FEEDS = [
         "source_id": "nyt",
         "is_military": False,
     },
+    {
+        "name": "Economic Times",
+        "url": "https://b2b.economictimes.indiatimes.com/rss/recentstories",
+        "region": "asia",
+        "source_id": "et",
+        "is_military": False,
+    },
 ]

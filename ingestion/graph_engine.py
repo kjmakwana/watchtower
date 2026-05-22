@@ -50,34 +50,39 @@ def build_graph(articles: list[dict], hours: int) -> dict:
     region_tickers_display:       dict[str, set[str]] = defaultdict(set)
 
     for article in articles:
-        region = article.get("region", "")
-        if not region or region == "global":
+        # Support both legacy single-region (region str) and new multi-region (regions list)
+        article_regions = [
+            r for r in (article.get("regions") or [article.get("region", "")])
+            if r and r != "global"
+        ]
+        if not article_regions:
             continue
 
-        region_meta[region]["article_count"] += 1
-        if article.get("is_military"):
-            region_meta[region]["military_count"] += 1
-
-        source = article.get("source") or ""
-        if source:
-            region_sources[region].add(source)
-
         is_mil = bool(article.get("is_military"))
-
+        source = article.get("source") or ""
         tickers = article.get("tickers") or []
         multiplier = MILITARY_MULTIPLIER if is_mil else 1.0
-        for entry in tickers:
-            ticker = entry["ticker"]
-            weight = entry["weight"] * multiplier
-            region_scores[region][ticker] += weight
-            if is_mil:
-                region_mil_scores[region][ticker] += weight
 
-        # Ticker accumulation — military articles excluded to prevent double-counting
-        for entry in tickers:
-            if not is_mil:
-                region_non_mil_ticker_weight[region] += entry["weight"]
-                region_tickers_display[region].add(entry["ticker"])
+        for region in article_regions:
+            region_meta[region]["article_count"] += 1
+            if is_mil:
+                region_meta[region]["military_count"] += 1
+
+            if source:
+                region_sources[region].add(source)
+
+            for entry in tickers:
+                ticker = entry["ticker"]
+                weight = entry["weight"] * multiplier
+                region_scores[region][ticker] += weight
+                if is_mil:
+                    region_mil_scores[region][ticker] += weight
+
+            # Ticker accumulation — military articles excluded to prevent double-counting
+            for entry in tickers:
+                if not is_mil:
+                    region_non_mil_ticker_weight[region] += entry["weight"]
+                    region_tickers_display[region].add(entry["ticker"])
 
     # nodes — three-pass: collect raw signals, compute cross-region maxes, normalise and score
     raw = []

@@ -4,7 +4,7 @@ from datetime import timezone
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, text
 
 from database import get_db
 from models import Article
@@ -24,7 +24,13 @@ def get_news(
     query = db.query(Article)
 
     if region:
-        query = query.filter(Article.region == region)
+        # Filter by regions JSON array; fall back to legacy region column for old rows
+        query = query.filter(
+            text(
+                "EXISTS (SELECT 1 FROM json_each(articles.regions) WHERE value = :r)"
+                " OR (articles.regions IS NULL AND articles.region = :r)"
+            ).bindparams(r=region)
+        )
     if source:
         query = query.filter(Article.source == source)
     if military is not None:
@@ -50,7 +56,8 @@ def get_news(
                 "url":          a.url,
                 "source":       a.source,
                 "source_name":  a.source_name,
-                "region":       a.region,
+                "regions":      a.regions,
+                "region":       a.region,   # DEPRECATED — kept for backward compat
                 "is_military":  a.is_military,
                 "summary":      a.summary,
                 "published_at": (

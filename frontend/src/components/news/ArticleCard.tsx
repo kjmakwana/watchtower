@@ -29,9 +29,11 @@ export function ArticleCard({ article }: { article: Article }) {
           {article.source_name}
         </span>
         <span className="font-mono text-[9px] text-ink-faint">·</span>
-        <span className="font-mono text-[9px] uppercase tracking-widest text-ink-faint">
-          {article.region}
-        </span>
+        {(article.regions ?? [article.region]).map((r, i) => (
+          <span key={r} className="font-mono text-[9px] uppercase tracking-widest text-ink-faint">
+            {i > 0 && <span className="mr-1">·</span>}{r}
+          </span>
+        ))}
         {article.is_military && (
           <>
             <span className="font-mono text-[9px] text-ink-faint">·</span>

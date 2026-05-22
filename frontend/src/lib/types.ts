@@ -4,7 +4,8 @@ export interface Article {
   url: string
   source: string
   source_name: string
-  region: string
+  regions: string[]
+  region: string  // DEPRECATED — use regions
   is_military: boolean
   summary: string
   published_at: string

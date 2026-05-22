@@ -21,7 +21,8 @@ def get_graph(
     articles = db.query(Article).filter(Article.published_at >= cutoff).all()
     article_dicts = [
         {
-            "region":      a.region,
+            "regions":     a.regions,   # list[str] — primary source for graph_engine
+            "region":      a.region,    # DEPRECATED — fallback for legacy rows without regions
             "tickers":     a.tickers,
             "is_military": a.is_military,
             "source":      a.source,

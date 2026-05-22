@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 _MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 
-SIMILARITY_THRESHOLD = 0.80  # embedding cosine; TF-IDF equivalent was 0.45
+SIMILARITY_THRESHOLD = 0.70  # embedding cosine; TF-IDF equivalent was 0.45
 WINDOW_HOURS = 24
 
 REGIONS = [
